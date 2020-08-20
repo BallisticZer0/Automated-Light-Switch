@@ -20,7 +20,7 @@ supportR = 3;
 supportH = 6;
 
 //dimentions for the front/lid
-lid = [104,102.3,4];
+lid = [104.5,102.7,4.5];
 
 //dimentions for the pi zero w
 pisize = [30,65,4];
@@ -34,6 +34,9 @@ powerhole = [6,11,6.8];
 cherry = [13.995,6,13.995];
 //outer ring for the cherryMX switch
 outerC = [19.995,4.5,19.995];
+
+// slants for the posts that hold the lid in. The diagnal cuts will at to clean looks and print structure.
+supportC = [10,10,5];
 
 union(){
 
@@ -55,41 +58,70 @@ union(){
 
 //adding the walls
   //sides, 1 front and back 2
-  for(x = [0,109.9],y = [0,108.3])
-  {
+ //[0,108.3]
+
+  //left wall, no cut outs for this one
+  color("Grey")
+  translate([0,0,6])
+  cube(walls);
+
     difference()
     {
+
+//Right wall, one cut out for the power
       color("Grey")
-      translate([x,0,6])
+      translate([109.9,0,6])
       cube(walls);
 
+//the cut out
       color("Black")
       translate([109.9,64.1,19])
       cube(powerhole);
+
     }
-    
+  //back wall, no cuts for this one
+translate([6,0,6])
+cube(wallsF);
+
+
     difference()
     {
-      translate([6,y,6])
+// front wall, two cut outs, one for the switch, one for the area around the switch (cherry MX)
+      translate([6,108.3,6])
       cube(wallsF);
-        
-      //outer wall so the switch can fit  
-      translate([47.952,109.8,12.5])  
-      cube(outerC);
-      // cut out for the switch
-      translate([50.952,108.3,15.5])
-      cube(cherry);
-        
-      
+
+      union()
+      {
+        //outer cut so the switch can fit
+        translate([47.952,109.8,12.5])
+        cube(outerC);
+        // cut out for the switch
+        translate([50.952,108.3,15.5])
+        cube(cherry);
+      }
     }
-  }
+
+
+
+
 
 // supports for the lid of the container
   for(x = [8,107.7], y = [8,106.3])
   {
-    color("Purple")
-    translate([x,y,29])
-    cylinder(r = supportR, h = supportH);
+      difference()
+      {
+        color("Purple")
+        translate([x,y,29])
+        cylinder(r = supportR, h = supportH);
+
+        for(x = [6,99.9], y = [6,98.3])
+        {
+
+            translate([x,y,29])
+            rotate([-35,-35,0])
+            #cube(supportC);
+        }
+      }
 
   }
 
