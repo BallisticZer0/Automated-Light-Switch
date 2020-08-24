@@ -1,11 +1,11 @@
-//post to hold the servo elevated so it     doesnt hit other switch
+//posts to hold servo in place, also where it screws into
 servoholder = [13.6,6.6,20.2];
 
 //holes for the screws to go into
 screwR = 2;
 screwH = 14.3;
 
-//switch dimentions are 115.9,114.3,10
+//switch plate dimentions are 115.9,114.3,10
 walls = [6,114.3,33];
 wallsF =[103.9,6,33];
 
@@ -20,7 +20,7 @@ supportR = 3;
 supportH = 6;
 
 //dimentions for the front/lid
-lid = [104.5,102.7,4.5];
+lid = [104.5,102.7,4];
 
 //dimentions for the pi zero w
 pisize = [30,65,4];
@@ -38,6 +38,11 @@ outerC = [19.995,4.5,19.995];
 // slants for the posts that hold the lid in. The diagnal cuts will at to clean looks and print structure.
 supportC = [10,10,5];
 
+//cut out of the bottom/back wall to beable to pop the lid off.
+openR = 6.45;
+
+
+
 union(){
 
   difference()
@@ -46,7 +51,7 @@ union(){
   //connecting part to the wall
   import("C:/Users/Aaron/Desktop/3d printing disigns/Lightswitch cover.stl");
 
-  //shaving off the top
+  //shaving off the top of the emachine shop base plate
   translate([-2,-2,6])
   cube([120,120,15]);
 
@@ -57,8 +62,6 @@ union(){
   cube(middle);
 
 //adding the walls
-  //sides, 1 front and back 2
- //[0,108.3]
 
   //left wall, no cut outs for this one
   color("Grey")
@@ -68,21 +71,35 @@ union(){
     difference()
     {
 
-//Right wall, one cut out for the power
+      //Right wall, one cut out for the power
       color("Grey")
       translate([109.9,0,6])
       cube(walls);
 
-//the cut out
+      //the cut out for the usb cable to power
       color("Black")
       translate([109.9,64.1,19])
       cube(powerhole);
 
     }
-  //back wall, no cuts for this one
-translate([6,0,6])
-cube(wallsF);
-
+  //back wall, one cut for popping out lid
+    difference()
+    {
+        translate([6,0,6])
+        cube(wallsF);
+        
+        
+        // slit to open the lid
+        translate([45.025,3,0])
+        hull()
+        {
+            translate([0,0,41])
+            sphere(openR);
+        
+            translate([25.4,0,41])
+            sphere(openR);
+        }
+    }
 
     difference()
     {
@@ -106,31 +123,47 @@ cube(wallsF);
 
 
 // supports for the lid of the container
-  for(x = [8,107.7], y = [8,106.3])
+
+  difference()
   {
-      difference()
-      {
+    for(x=[8:99.7:107.7],y=[8:98.3:106.3])
+    {
         color("Purple")
         translate([x,y,29])
         cylinder(r = supportR, h = supportH);
+    }
 
-        for(x = [6,99.9], y = [6,98.3])
-        {
-
-            translate([x,y,29])
-            rotate([-35,-35,0])
-            #cube(supportC);
-        }
+  //cut out
+      union()
+      {
+        //bottom left
+          translate([8,7,24])
+          rotate([32,-32,0])
+          cube(supportC);
+        //top left
+          translate([6,98.9,29])
+          rotate([-32,-32,0])
+          cube(supportC);
+        //top Right
+          translate([102,99.5,33.5])
+          rotate([-32,32,0])
+          cube(supportC);
+        //bottom right
+          translate([99.9,6,28])
+          rotate([32,32,0])
+          cube(supportC);
       }
-
   }
+
+
+
 
 //Pi mount
 translate([75.9,24.65,15])
 import("C:/Users/Aaron/Desktop/3d printing disigns/bottom for pi zero.stl");
 
 
-	//supports for pi mounts
+	//support for pi mount
 	translate([105.9,24.65,6])
 	cube(left);
 
@@ -147,21 +180,20 @@ import("C:/Users/Aaron/Desktop/3d printing disigns/bottom for pi zero.stl");
 
     for( y= [63.7,18.4])
     {
-      difference(){
-      //servo holder
-      color("Yellow")
-      translate([51,y,11.5])
-      cube(servoholder);
-
-        //adding the screw holes
-        for(z = [16.1,26.24], y = [67,21.5]) // 4.10 from bottom for first screw, z
+        difference()
         {
-        translate([51,y,z])
-        rotate([90,0,90])
-        cylinder(r = screwR,h = screwH);
+          //servo holder
+          color("Yellow")
+          translate([51,y,11.5])
+          cube(servoholder);
+
+          //adding the screw holes z
+          for(z=[16.1:10.14:26.25], y = [21.5:45.5:67]) // 4.10 from bottom for first screw, z
+          {
+            translate([50.7,y,z])
+            rotate([90,0,90])
+            cylinder(r = screwR,h = screwH, $fn = 15);
+          }
         }
-      }
-
     }
-
 }
